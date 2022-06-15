@@ -31,7 +31,7 @@ def create_levenshtein_automata(string: str, distance: int):
     return afn
 
 
-def get_valid_strings(string: str, distance: int, haystack: list):
+def get_valid_strings(string: str, distance: int, haystack: list[str]):
     """
     Cria um automato de levenshtein para `string` com tamanho `distance` e retorna todas as strings validas que
     estão em `haystack`.
@@ -45,13 +45,13 @@ def replace_strings(strings: list[str], *, distance: int):
     Cria um automato de levenshtein para `string` com tamanho `distance`. Procura por strings válidas em `strings` e
     substitui todas as ocorrencias das strings válidas em `strings` por uma string válida arbitrária.
     """
-    seen = []
+    replaced_strings: list[str] = []
+    seen = set()
     for i, string in enumerate(strings):
         if (i, string) not in seen:
             valid_strings = get_valid_strings(string, distance, strings)
 
-            for j, _ in valid_strings:
-                strings[j] = string
-            seen.extend(valid_strings)
+            replaced_strings.extend([string for _, string in valid_strings])
+            seen.update(valid_strings)
 
-    return strings
+    return replaced_strings

@@ -26,14 +26,15 @@ class AFN:
     def _delta(self, string: str):
         dest_states = self._eclosure({self.start_state})
         for symbol in string:
-            for state in dest_states.copy():
-                dest_states.remove(state)
-
-                dest_states = dest_states.union(
-                    self._eclosure(self.next_state(state, symbol).union(self.next_state(state, AFN.ANY)))
-                )
+            dest_states = self.__apply(dest_states, symbol)
 
         return dest_states
+
+    def __apply(self, states: set, symbol: str):
+        result = set()
+        for state in self._eclosure(states):
+            result.update(self.next_state(state, symbol).union(self.next_state(state, AFN.ANY)))
+        return result
 
     def validate_string(self, string: str) -> bool:
         return bool(self.is_final(self._delta(string)))
